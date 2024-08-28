@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 
-const Hand = ({ hands, onCollide, isPlayer }) => {
+const Hand = ({ hands, onCollide, isPlayer, isDisabled }) => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '20px 0' }}>
             <h2 style={{ marginRight: '20px' }}>{isPlayer ? 'Player' : 'Bot'}</h2>
@@ -10,12 +10,13 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
                 const [, drag] = useDrag(() => ({
                     type: 'number',
                     item: { id: hand.id },
-                    canDrag: () => hand.isActive,  // Only allow dragging if the hand is active
+                    canDrag: () => hand.isActive && !isDisabled, // Disable dragging if isDisabled is true
                 }));
 
                 const [{ canDrop, isOver }, drop] = useDrop(() => ({
                     accept: 'number',
                     canDrop: (item) => {
+                        if (isDisabled) return false; // Disable drop if isDisabled is true
                         if (hand.isActive) {
                             if (isPlayer && item.id.startsWith('bot')) {
                                 return true;
@@ -47,7 +48,7 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
                         ref={ref}
                         className="draggable-number"
                         style={{
-                            cursor: hand.isActive ? (isPlayer ? 'move' : 'default') : 'not-allowed',
+                            cursor: hand.isActive && !isDisabled ? (isPlayer ? 'move' : 'default') : 'not-allowed',
                             backgroundColor: canDrop && isOver ? 'green' : 'gray',
                             padding: '10px',
                             margin: '0 10px',
@@ -71,6 +72,7 @@ Hand.propTypes = {
     })).isRequired,
     onCollide: PropTypes.func.isRequired,
     isPlayer: PropTypes.bool.isRequired,
+    isDisabled: PropTypes.bool.isRequired, // Add isDisabled prop type
 };
 
 export default Hand;

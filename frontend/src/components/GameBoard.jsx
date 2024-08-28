@@ -83,7 +83,7 @@ const GameBoard = () => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100vh' }}>
             <h1>Player vs Bot Game</h1>
-            <div style={{ height: '50px', marginTop: '20px' }}> {/* Set a fixed height to avoid layout shift */}
+            <div style={{ height: '50px', marginTop: '20px' }}>
                 <p style={{ visibility: botMoving ? 'visible' : 'hidden' }}>Bot is thinking...</p>
             </div>
             {gameOver ? (
@@ -97,11 +97,13 @@ const GameBoard = () => {
                         hands={botHands}
                         onCollide={handlePlayerCollide}
                         isPlayer={false}
+                        isDisabled={botMoving} // Disable bot's hand during their move
                     />
                     <Hand
                         hands={playerHands}
                         onCollide={handlePlayerCollide}
                         isPlayer={true}
+                        isDisabled={botMoving} // Disable player's hand during bot's move
                     />
                 </>
             )}
