@@ -13,6 +13,8 @@ const GameBoard = () => {
     ]);
 
     const [botMoving, setBotMoving] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [winner, setWinner] = useState(null); // State to track the winner
 
     const playerHandsRef = useRef(playerHands);
     const botHandsRef = useRef(botHands);
@@ -24,6 +26,19 @@ const GameBoard = () => {
     useEffect(() => {
         botHandsRef.current = botHands;
     }, [botHands]);
+
+    const checkGameOver = useCallback(() => {
+        const playerActive = playerHandsRef.current.some(hand => hand.isActive);
+        const botActive = botHandsRef.current.some(hand => hand.isActive);
+
+        if (!playerActive) {
+            setGameOver(true);
+            setWinner('Player');
+        } else if (!botActive) {
+            setGameOver(true);
+            setWinner('Bot');
+        }
+    }, []);
 
     const handlePlayerCollide = useCallback((playerId, botId) => {
         setPlayerHands(prevPlayerHands => {
@@ -40,8 +55,11 @@ const GameBoard = () => {
         });
 
         setBotMoving(true);
-        setTimeout(handleBotMove, 1000);
-    }, []);
+        setTimeout(() => {
+            handleBotMove();
+            checkGameOver();  // Check game over after the bot's move
+        }, 1000);
+    }, [checkGameOver]);
 
     const handleBotMove = useCallback(() => {
         setBotHands(prevBotHands => {
@@ -61,22 +79,32 @@ const GameBoard = () => {
             return prevBotHands;
         });
         setBotMoving(false);
-    }, []);
+        checkGameOver();  // Check game over after updating botHands
+    }, [checkGameOver]);
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100vh' }}>
             <h1>Player vs Bot Game</h1>
-            <Hand
-                hands={botHands}
-                onCollide={handlePlayerCollide}
-                isPlayer={false}
-            />
-            <Hand
-                hands={playerHands}
-                onCollide={handlePlayerCollide}
-                isPlayer={true}
-            />
-            {botMoving && <p>Bot is thinking...</p>}
+            {gameOver ? (
+                <div style={{ marginTop: '20px' }}>
+                    <h2>Game Over</h2>
+                    <p>{winner} wins!</p>
+                </div>
+            ) : (
+                <>
+                    <Hand
+                        hands={botHands}
+                        onCollide={handlePlayerCollide}
+                        isPlayer={false}
+                    />
+                    <Hand
+                        hands={playerHands}
+                        onCollide={handlePlayerCollide}
+                        isPlayer={true}
+                    />
+                    {botMoving && <p>Bot is thinking...</p>}
+                </>
+            )}
         </div>
     );
 };
