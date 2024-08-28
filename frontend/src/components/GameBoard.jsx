@@ -14,7 +14,7 @@ const GameBoard = () => {
 
     const [botMoving, setBotMoving] = useState(false);
     const [gameOver, setGameOver] = useState(false);
-    const [winner, setWinner] = useState(null); // State to track the winner
+    const [winner, setWinner] = useState(null);
 
     const playerHandsRef = useRef(playerHands);
     const botHandsRef = useRef(botHands);
@@ -46,7 +46,6 @@ const GameBoard = () => {
             const newPlayerHands = prevPlayerHands.map(hand => {
                 if (hand.id === playerId) {
                     const newValue = (hand.value + botHand.value) % 10;
-                    console.log(`Updating player hand ${hand.id} from ${hand.value} to ${newValue}`);
                     return { ...hand, value: newValue, isActive: newValue !== 0 };
                 }
                 return hand;
@@ -57,7 +56,7 @@ const GameBoard = () => {
         setBotMoving(true);
         setTimeout(() => {
             handleBotMove();
-            checkGameOver();  // Check game over after the bot's move
+            checkGameOver();
         }, 1000);
     }, [checkGameOver]);
 
@@ -69,7 +68,6 @@ const GameBoard = () => {
                 const newBotHands = prevBotHands.map((hand, index) => {
                     if (index === botId) {
                         const newValue = (hand.value + playerHand.value) % 10;
-                        console.log(`Updating bot hand ${hand.id} from ${hand.value} to ${newValue}`);
                         return { ...hand, value: newValue, isActive: newValue !== 0 };
                     }
                     return hand;
@@ -79,12 +77,15 @@ const GameBoard = () => {
             return prevBotHands;
         });
         setBotMoving(false);
-        checkGameOver();  // Check game over after updating botHands
+        checkGameOver();
     }, [checkGameOver]);
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100vh' }}>
             <h1>Player vs Bot Game</h1>
+            <div style={{ height: '50px', marginTop: '20px' }}> {/* Set a fixed height to avoid layout shift */}
+                <p style={{ visibility: botMoving ? 'visible' : 'hidden' }}>Bot is thinking...</p>
+            </div>
             {gameOver ? (
                 <div style={{ marginTop: '20px' }}>
                     <h2>Game Over</h2>
@@ -102,7 +103,6 @@ const GameBoard = () => {
                         onCollide={handlePlayerCollide}
                         isPlayer={true}
                     />
-                    {botMoving && <p>Bot is thinking...</p>}
                 </>
             )}
         </div>
