@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 
@@ -10,15 +10,18 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
                 const [, drag] = useDrag(() => ({
                     type: 'number',
                     item: { id: hand.id },
+                    canDrag: () => hand.isActive,  // Only allow dragging if the hand is active
                 }));
 
                 const [{ canDrop, isOver }, drop] = useDrop(() => ({
                     accept: 'number',
                     canDrop: (item) => {
-                        if (isPlayer && item.id.startsWith('bot')) {
-                            return true;
-                        } else if (!isPlayer && item.id.startsWith('player')) {
-                            return true;
+                        if (hand.isActive) {
+                            if (isPlayer && item.id.startsWith('bot')) {
+                                return true;
+                            } else if (!isPlayer && item.id.startsWith('player')) {
+                                return true;
+                            }
                         }
                         return false;
                     },
@@ -35,7 +38,7 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
                     }),
                 }));
 
-                const ref = React.useRef(null);
+                const ref = useRef(null);
                 drag(drop(ref));
 
                 return (
@@ -44,11 +47,12 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
                         ref={ref}
                         className="draggable-number"
                         style={{
-                            cursor: isPlayer ? 'move' : 'default',
-                            backgroundColor: canDrop && isOver ? 'green' : 'black',
+                            cursor: hand.isActive ? (isPlayer ? 'move' : 'default') : 'not-allowed',
+                            backgroundColor: canDrop && isOver ? 'green' : 'gray',
                             padding: '10px',
                             margin: '0 10px',
                             border: canDrop ? '2px dashed green' : '2px solid red',
+                            opacity: hand.isActive ? 1 : 0.5,  // Dim inactive hands
                         }}
                     >
                         {hand.value}
@@ -62,7 +66,8 @@ const Hand = ({ hands, onCollide, isPlayer }) => {
 Hand.propTypes = {
     hands: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
-        value: PropTypes.number.isRequired
+        value: PropTypes.number.isRequired,
+        isActive: PropTypes.bool.isRequired
     })).isRequired,
     onCollide: PropTypes.func.isRequired,
     isPlayer: PropTypes.bool.isRequired,
