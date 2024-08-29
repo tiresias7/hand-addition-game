@@ -10,8 +10,8 @@ const Hand = ({ hands, onCollide, isPlayer, isDisabled }) => {
                 const [, drag] = useDrag(() => ({
                     type: 'number',
                     item: { id: hand.id },
-                    canDrag: () => hand.isActive && !isDisabled, // Disable dragging if isDisabled is true
-                }));
+                    canDrag: () => hand.isActive && !isDisabled && isPlayer, // Disable dragging if isDisabled is true
+                }), [hand.isActive, isDisabled]);
 
                 const [{ canDrop, isOver }, drop] = useDrop(() => ({
                     accept: 'number',
@@ -37,7 +37,7 @@ const Hand = ({ hands, onCollide, isPlayer, isDisabled }) => {
                         canDrop: monitor.canDrop(),
                         isOver: monitor.isOver(),
                     }),
-                }));
+                }), [hand.isActive, isDisabled]);
 
                 const ref = useRef(null);
                 drag(drop(ref));
