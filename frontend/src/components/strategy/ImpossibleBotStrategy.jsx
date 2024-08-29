@@ -168,9 +168,17 @@ function getStateWithHands(botHands, playerHands) {
 }
 
 export class ImpossibleBotStrategy extends BotStrategy {
+    static cachedStates = null; // Cache the states to avoid recomputing them
+
     constructor() {
         super(); // Call the parent class constructor
-        const { reachableStates, determinedStates, trickyStates } = classifyStates();
+
+        if (!ImpossibleBotStrategy.cachedStates) {
+            // console.log("Classifying states...");
+            ImpossibleBotStrategy.cachedStates = classifyStates();
+        }
+
+        const { reachableStates, determinedStates, trickyStates } = ImpossibleBotStrategy.cachedStates;
         this.reachableStates = reachableStates;
         this.determinedStates = determinedStates;
         this.trickyStates = trickyStates;
