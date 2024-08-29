@@ -54,6 +54,7 @@ const Hand = ({ hands, onCollide, isPlayer, isDisabled }) => {
                             margin: '0 10px',
                             border: canDrop ? '2px dashed green' : '2px solid red',
                             opacity: hand.isActive ? 1 : 0.5,  // Dim inactive hands
+                            touchAction: 'none', // Disable touch scrolling
                         }}
                     >
                         {hand.value}
