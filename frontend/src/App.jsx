@@ -1,11 +1,12 @@
-import DraggableNumberList from './components/DraggableNumberList';
 import GameBoard from './components/GameBoard';
 import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { MultiBackend } from 'react-dnd-multi-backend';
+import { HTML5toTouch } from 'rdndmb-html5-to-touch';
+
 
 function App() {
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div className="App">
         <GameBoard />
       </div>
