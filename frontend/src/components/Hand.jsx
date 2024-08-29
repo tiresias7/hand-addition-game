@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const Hand = ({ hands, onCollide, isPlayer, isDisabled }) => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '20px 0' }}>
-            <h2 style={{ marginRight: '20px' }}>{isPlayer ? 'Player' : 'Bot'}</h2>
+            <h2 style={{ marginRight: '20px' }}>{isPlayer ? 'You' : 'Bot'}</h2>
             {hands.map((hand) => {
                 const [, drag] = useDrag(() => ({
                     type: 'number',
